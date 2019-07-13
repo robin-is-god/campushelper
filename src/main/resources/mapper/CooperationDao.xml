@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.apache.org//DTD Mapper 3.0//EN"
+        "http://mybatis.apache.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="edu.cuit.robin.campushelper.dao.CooperationDao">
+
+    <select id="queryAllCooperation" resultType="java.util.HashMap">
+        SELECT c.*,u.loginName,u.picturePath,u.nickName
+        FROM cooperation c left join user u on c.userId = u.uid
+        order by c.createTime desc
+    </select>
+
+    <select id="queryCooById" resultType="java.util.HashMap" parameterType="int">
+        SELECT c.*,u.loginName,u.picturePath,u.nickName
+        FROM cooperation c left join user u on c.userId = u.uid
+        where c.cooid=#{cooId}
+        order by c.createTime desc
+    </select>
+
+    <select id="queryUserCooInfo" resultType="edu.cuit.robin.campushelper.model.Cooperation" parameterType="int">
+        SELECT c.createTime,c.cooid,c.title,c.solve,c.picUrl,SUBSTRING(content,1,30)content
+        from cooperation c
+        where userId=#{userId}
+        order by c.createTime desc
+    </select>
+
+    <insert id="insertCooperation" useGeneratedKeys="true" keyProperty="cooId" keyColumn="cooId" parameterType="edu.cuit.robin.campushelper.model.Cooperation">
+        insert into cooperation(userId,title,content,contact,picUrl,createTime)
+        values
+        (#{userId},#{title},#{content},#{contact},#{picUrl},now())
+    </insert>
+
+    <update id="updateCooInfo">
+        update cooperation
+        set solve=#{solve}
+        where cooid=#{cooId}
+    </update>
+
+    <delete id="deleteCooperation">
+        delete from cooperation
+        where cooid=#{cooId}
+    </delete>
+</mapper>

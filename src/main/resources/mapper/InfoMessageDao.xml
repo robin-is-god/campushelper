@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.apache.org//DTD Mapper 3.0//EN"
+        "http://mybatis.apache.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="edu.cuit.robin.campushelper.dao.InfoMessageDao">
+
+    <select id="queryInfoMessage" resultType="java.util.HashMap" parameterType="edu.cuit.robin.campushelper.model.InfoMessage">
+        SELECT info.content,info.createTime, u.loginName, u.picturePath,u.nickName
+        from info_message info
+        left join user u
+        on info.userId = u.uid
+        where 1=1
+        <if test="pId != null">
+            and info.pid=#{pId}
+        </if>
+        <if test="aiId != null">
+            and info.aiid=#{aiId}
+        </if>
+        <if test="cooId != null">
+            and info.cooid=#{cooId}
+        </if>
+        order by createTime desc
+    </select>
+
+    <insert id="insertInfoMessage" useGeneratedKeys="true" keyProperty="mId" keyColumn="mid" parameterType="edu.cuit.robin.campushelper.model.InfoMessage">
+        insert into info_message(
+        <trim suffixOverrides=",">
+            <if test="cooId != null">
+                cooid,
+            </if>
+            <if test="aiId != null">
+                aiid,
+            </if>
+            <if test="pId != null">
+                pid,
+            </if>
+            <if test="userId != null">
+                userId,
+            </if>
+            <if test="content != null">
+                content,
+            </if>
+                createTime)
+        </trim>
+        <trim prefix="values(" suffixOverrides=",">
+            <if test="cooId != null">
+                #{cooId},
+            </if>
+            <if test="aiId != null">
+                #{aiId},
+            </if>
+            <if test="pId != null">
+                #{pId},
+            </if>
+            <if test="userId != null">
+                #{userId},
+            </if>
+            <if test="content != null">
+                #{content},
+            </if>
+            now())
+        </trim>
+    </insert>
+
+    <delete id="deleteInfoByPid">
+        delete from info_message
+        where pid=#{pId}
+    </delete>
+
+    <delete id="deleteInfoByAid">
+        delete from info_message
+        where aid=#{aId}
+    </delete>
+
+    <delete id="deleteInfoByCid">
+        delete from info_message
+        where cid=#{cId}
+    </delete>
+</mapper>

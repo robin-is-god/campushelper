@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.apache.org//DTD Mapper 3.0//EN"
+        "http://mybatis.apache.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="edu.cuit.robin.campushelper.dao.UserDao">
+    <select id="queryAllUser" resultType="edu.cuit.robin.campushelper.model.User">
+        SELECT *
+        from user
+        order by uid
+    </select>
+
+    <select id="queryIsEnableUser" resultType="edu.cuit.robin.campushelper.model.User" parameterType="boolean">
+        SELECT *
+        from user
+        where enable=#{enable}
+    </select>
+
+    <select id="queryUserByNickName" resultType="edu.cuit.robin.campushelper.model.User" parameterType="String">
+        SELECT *
+        from user
+        where 1=1
+        <if test="nickName != null and nickName != ''">
+            and nickName like '%' ||#{nickName,jdbcType=VARCHAR} ||'%'
+        </if>
+    </select>
+
+    <select id="queryUserById" resultType="edu.cuit.robin.campushelper.model.User" parameterType="int">
+        SELECT *
+        from user
+        where uid=#{uId}
+    </select>
+
+    <select id="queryUserByLoginName" resultType="edu.cuit.robin.campushelper.model.User" parameterType="String">
+        SELECT *
+        from user
+        where loginName=#{loginName}
+    </select>
+
+    <select id="loginUser" resultType="edu.cuit.robin.campushelper.model.User" parameterType="String">
+        SELECT *
+        from user
+        where 1=1
+        and loginName=#{loginName}
+        and password=#{password}
+    </select>
+
+    <insert id="insertUser" useGeneratedKeys="true" keyProperty="uId" keyColumn="uid" parameterType="edu.cuit.robin.campushelper.model.User">
+        insert into user(loginName,password,sex,nickName,picturePath)
+        values
+        (#{loginName},#{password},#{sex},#{nickName},#{picturePath})
+    </insert>
+
+    <update id="updateUser" parameterType="edu.cuit.robin.campushelper.model.User">
+        update user
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="loginName != null and loginName != ''">
+                loginName=#{loginName},
+            </if>
+            <if test="password != null and password != ''">
+                password=#{password},
+            </if>
+            <if test="rId != null and rId != ''">
+                rid=#{rId},
+            </if>
+            <if test="sex != null and sex != ''">
+                sex=#{sex},
+            </if>
+            <if test="nickName != null and nickName != ''">
+                nickName=#{nickName},
+            </if>
+            <if test="phone != null and phone != ''">
+                phone=#{phone},
+            </if>
+            <if test="mail != null and mail != ''">
+                mail=#{mail},
+            </if>
+            <if test="payPass != null and payPass != ''">
+                payPass=#{payPass},
+            </if>
+            <if test="picturePath != null and picturePath != ''">
+                picturePath=#{picturePath},
+            </if>
+            <if test="address != null and address != ''">
+                address=#{address},
+            </if>
+            <if test="remark != null and remark != ''">
+                remark=#{remark},
+            </if>
+            <if test="enable != null and is_enable != ''">
+                enable=#{enable}
+            </if>
+        </trim>
+            where uid=#{uId}
+    </update>
+
+    <delete id="deleteUser">
+        delete from user
+        where uid in
+        <foreach item="idArr"  collection="list" open="(" separator="," close=")">
+            #{idArr}
+        </foreach>
+    </delete>
+
+    <update id="setUserBan">
+        update user
+        set enable = 0
+        where uid=#{uId}
+    </update>
+
+    <update id="setUserEnable">
+        update user
+        set enable = 1
+        where uid=#{uId}
+    </update>
+
+    <update id="setUserCampus">
+        update user
+        set rid = 2
+        where uid=#{uId}
+    </update>
+
+    <update id="setUserNormal">
+        update user
+        set rid = 1
+        where uid=#{uId}
+    </update>
+
+</mapper>

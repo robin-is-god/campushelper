@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.apache.org//DTD Mapper 3.0//EN"
+        "http://mybatis.apache.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="edu.cuit.robin.campushelper.dao.UserShoppingAddressDao">
+
+    <select id="queryUserAddress" resultType="edu.cuit.robin.campushelper.model.UserShoppingAddress" parameterType="java.lang.Integer">
+        SELECT * FROM user_shopping_address
+        WHERE deleted=0
+        <if test="userId != null">
+            and userId=#{userId}
+        </if>
+    </select>
+
+    <select id="queryAddressByAid" resultType="edu.cuit.robin.campushelper.model.UserShoppingAddress" parameterType="java.lang.Integer">
+        SELECT * FROM user_shopping_address
+        WHERE 1 = 1
+        <if test="aId != null">
+            and aid=#{aId}
+        </if>
+    </select>
+
+    <insert id="insertUserAddress" useGeneratedKeys="true" keyProperty="aId" keyColumn="aId" parameterType="edu.cuit.robin.campushelper.model.UserShoppingAddress">
+        insert into user_shopping_address(userId,name,address,phone,createTime,defaulted,remark)
+        values
+        (#{userId},#{name},#{address},#{phone},now(),#{defaulted},#{remark})
+    </insert>
+
+    <update id="updateAddressDefault" parameterType="edu.cuit.robin.campushelper.model.UserShoppingAddress">
+        update user_shopping_address
+        set defaulted=false
+        where userId=#{userId}
+    </update>
+
+    <update id="updateUserAddress" parameterType="edu.cuit.robin.campushelper.model.UserShoppingAddress">
+        update user_shopping_address
+        <set>
+            <if test="address != null and address != ''">
+                address=#{address},
+            </if>
+            <if test="phone != null and phone != ''">
+                phone=#{phone},
+            </if>
+            <if test="remark != null and remark != ''">
+                remark=#{remark},
+            </if>
+            <if test="name != null and name != ''">
+                name=#{name},
+            </if>
+            <if test="defaulted != null and defaulted != ''">
+                defaulted=#{defaulted}
+            </if>
+        </set>
+        where aid=#{aId}
+    </update>
+
+    <update id="deleteUserAddress">
+        update user_shopping_address
+        set deleted=1
+        where aid=#{aId}
+    </update>
+</mapper>

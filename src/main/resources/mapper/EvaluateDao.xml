@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.apache.org//DTD Mapper 3.0//EN"
+        "http://mybatis.apache.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="edu.cuit.robin.campushelper.dao.EvaluateDao">
+
+    <select id="queryGoodEva" resultType="java.util.Map" parameterType="int">
+        SELECT e.evaPic,e.content,e.createTime,e.score,u.loginName,u.nickName,u.picturePath
+        from evaluate e left join user u on e.userId = u.uid
+        where e.gid=#{gId}
+    </select>
+
+
+    <insert id="insertEvaluate" useGeneratedKeys="true" keyProperty="eId" keyColumn="eid" parameterType="edu.cuit.robin.campushelper.model.Evaluate">
+        insert into evaluate(gid,userId,score,content,createTime,evaPic)
+        values
+        (#{gId},#{userId},#{score},#{content},now(),#{evaPic})
+    </insert>
+
+    <delete id="deleteEvaluate">
+        delete from evaluate
+        where eid=#{eId}
+    </delete>
+
+</mapper>

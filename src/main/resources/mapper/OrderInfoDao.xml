@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.apache.org//DTD Mapper 3.0//EN"
+        "http://mybatis.apache.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="edu.cuit.robin.campushelper.dao.OrderInfoDao">
+    <select id="queryUserOrderByUid" resultType="java.util.Map">
+        SELECT o.*,g.goodName,g.goodPic
+        from orderInfo o left join good g on o.gid = g.gid
+        where o.suserId=#{userId} or o.buserId=#{userId}
+        order by o.createTime desc
+    </select>
+
+    <select id="queryOrderDetail" resultType="java.util.Map" parameterType="int">
+        SELECT o.oid,o.createTime,o.seriaNum,o.total,o.buserId,o.suserId,o.quantity,
+        g.goodName,g.goodPic,g.goodPrice,
+        a.name,a.address,a.phone,a.remark
+        from orderInfo o,good g, user_shopping_address a
+        where o.gid = g.gid and o.aid = a.aid
+        and o.oid=#{oId}
+        order by o.createTime desc
+    </select>
+
+    <select id="queryNotEvaOrder" resultType="java.util.Map" parameterType="int">
+        SELECT o.oid,o.seriaNum,o.total,o.quantity,o.gId,g.goodName,g.goodPic
+        from orderInfo o left join good g on o.gid = g.gid
+        where evaluated = 0 and o.buserId=#{userId}
+        order by o.createTime desc
+    </select>
+
+    <select id="queryOrderId" resultType="edu.cuit.robin.campushelper.model.OrderInfo" parameterType="String">
+        SELECT o.oid
+        from orderInfo o
+        where o.seriaNum=#{seriaNum}
+    </select>
+
+    <insert id="insertOrderInfo" useGeneratedKeys="true" keyProperty="oId" keyColumn="oid" parameterType="edu.cuit.robin.campushelper.model.OrderInfo">
+        insert into orderInfo(suserId,buserId,gId,quantity,seriaNum,aId,total,createTime)
+        values
+        (#{suserId},#{buserId},#{gId},#{quantity},#{seriaNum},#{aId},#{total},now())
+    </insert>
+
+    <update id="updateOrderEva" parameterType="int">
+        update orderInfo
+        set evaluated=1
+        where oid=#{oid}
+    </update>
+
+    <delete id="deleteOrderInfo">
+        delete from orderInfo
+        where oid=#{oId}
+    </delete>
+
+</mapper>

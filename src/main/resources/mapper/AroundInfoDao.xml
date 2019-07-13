@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.apache.org//DTD Mapper 3.0//EN"
+        "http://mybatis.apache.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="edu.cuit.robin.campushelper.dao.AroundInfoDao">
+
+    <select id="queryInfoByType" resultType="java.util.HashMap" parameterType="String">
+        SELECT a.*,u.loginName,u.picturePath,u.nickName
+        FROM around_info a left join user u on a.userId = u.uid
+        WHERE 1 = 1
+        <if test="type != null and type != ''">
+            and type=#{type}
+        </if>
+        order by createTime desc
+    </select>
+
+    <select id="queryAllInfo" resultType="java.util.HashMap" parameterType="String">
+        SELECT a.*,u.loginName,u.picturePath,u.nickName
+        FROM around_info a left join user u on a.userId = u.uid
+        WHERE 1 = 1
+        order by a.createTime desc
+    </select>
+
+    <select id="queryAroundType" resultType="edu.cuit.robin.campushelper.model.AroundInfo" parameterType="String">
+        SELECT a.type
+        FROM around_info a
+        group by a.type
+        order by a.type
+    </select>
+
+    <select id="queryUserAroundInfo" resultType="edu.cuit.robin.campushelper.model.AroundInfo" parameterType="int">
+        SELECT a.createTime,a.aiid,a.title,a.picUrl,a.type,SUBSTRING(a.content,1,42)content
+        from around_info a
+        where userId=#{userId}
+        order by a.createTime desc
+    </select>
+
+    <select id="queryAroundById" resultType="java.util.HashMap" parameterType="int">
+        SELECT a.*, u.loginName, u.picturePath,u.nickName
+        from around_info a
+        left join user u
+        on a.userId = u.uid
+        where aiid=#{aiId}
+    </select>
+
+    <insert id="insertAroundInfo" useGeneratedKeys="true" keyProperty="aiId" keyColumn="aiId" parameterType="edu.cuit.robin.campushelper.model.AroundInfo">
+        insert into around_info(userId,type,title,contact,content,picUrl,createTime)
+        values
+        (#{userId},#{type},#{title},#{contact},#{content},#{picUrl},now())
+    </insert>
+
+    <update id="updateAroundInfo" parameterType="edu.cuit.robin.campushelper.model.AroundInfo">
+        update around_info
+        <set>
+            <if test="type != null and type != ''">
+                type=#{type},
+            </if>
+            <if test="title != null and title != ''">
+                title=#{title},
+            </if>
+            <if test="content != null and content != ''">
+                content=#{content},
+            </if>
+        </set>
+    </update>
+
+    <delete id="deleteAroundInfo">
+        delete from around_info
+        where aiid=#{aiId}
+    </delete>
+</mapper>

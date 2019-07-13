@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.apache.org//DTD Mapper 3.0//EN"
+        "http://mybatis.apache.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="edu.cuit.robin.campushelper.dao.CampusInfoDao">
+
+    <select id="queryAllInfo" resultType="java.util.HashMap">
+        SELECT c.ciid,c.title,SUBSTRING(content,1,25)content,c.picUrl,c.createTime,u.loginName
+        FROM campus_info c left join user u on c.userId = u.uid
+        order by c.createTime desc
+    </select>
+
+    <select id="queryInfoById" resultType="java.util.HashMap" parameterType="int">
+        SELECT c.*,u.loginName
+        FROM campus_info c left join user u on c.userId = u.uid
+        where ciid=#{ciId}
+    </select>
+
+    <select id="queryIndexInfo" resultType="java.util.HashMap">
+        SELECT c.ciid,c.title,SUBSTRING(content,1,25)content,c.picUrl,c.ciid
+        FROM campus_info c
+        order by createTime DESC
+        LIMIT 3
+    </select>
+
+    <insert id="insertCampusInfo" useGeneratedKeys="true" keyProperty="ciId" keyColumn="ciId" parameterType="edu.cuit.robin.campushelper.model.CampusInfo">
+        insert into campus_info(userId,title,content,picUrl,createTime)
+        values
+        (#{userId},#{title},#{content},#{picUrl},now())
+    </insert>
+
+    <update id="updateCampusInfo" parameterType="edu.cuit.robin.campushelper.model.CampusInfo">
+        update campus_info
+        <set>
+            <if test="type != null and type != ''">
+                title=#{title},
+            </if>
+            <if test="title != null and title != ''">
+                content=#{content},
+            </if>
+            <if test="content != null and content != ''">
+                picUrl=#{picUrl},
+            </if>
+        </set>
+    </update>
+
+    <delete id="deleteCampusInfo">
+        delete from campus_info
+        where ciid = #{ciId}
+    </delete>
+</mapper>

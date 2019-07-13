@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.apache.org//DTD Mapper 3.0//EN"
+        "http://mybatis.apache.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="edu.cuit.robin.campushelper.dao.GoodDao">
+    <select id="queryAllGood" resultType="edu.cuit.robin.campushelper.model.Good">
+        SELECT *
+        from good
+        where deleted=0
+    </select>
+
+    <select id="queryGoodByType" resultType="edu.cuit.robin.campushelper.model.Good" parameterType="String">
+        SELECT *
+        from good
+        where deleted=0
+        and goodType=#{goodType}
+    </select>
+
+    <select id="queryIndexGood" resultType="edu.cuit.robin.campushelper.model.Good">
+        select * from good
+        where deleted=0
+        order by createTime DESC
+        LIMIT 3
+    </select>
+
+    <select id="queryGoodById" resultType="java.util.HashMap" parameterType="int">
+        SELECT g.*,u.loginName,u.nickName
+        from good g left join user u on g.userId=u.uid
+        where gid=#{gId}
+    </select>
+
+    <select id="queryGoodByName" resultType="edu.cuit.robin.campushelper.model.Good" parameterType="String">
+        SELECT *
+        from good
+        where deleted=0
+        <if test="goodName != null">
+            and goodName like concat(concat('%',#{goodName}),'%')
+            order by ${sort} ${order}
+        </if>
+    </select>
+
+    <select id="queryAllType" resultType="edu.cuit.robin.campushelper.model.Good">
+        SELECT good.goodType,good.goodPic
+        from good
+        where deleted=0
+        group by good.goodType
+    </select>
+
+    <select id="queryUserGood" resultType="edu.cuit.robin.campushelper.model.Good" parameterType="int">
+        SELECT g.goodName,g.gid,g.goodType,g.goodPrice,g.goodPic,SUBSTRING(g.goodDescription,1,42)goodDescription,g.createTime
+        from good g
+        where deleted=0
+        and g.userId=#{userId}
+        order by createTime desc
+    </select>
+
+
+    <insert id="insertGood" useGeneratedKeys="true" keyProperty="gId" keyColumn="gid" parameterType="edu.cuit.robin.campushelper.model.Good">
+        insert into good(userId,goodName,goodDescription,goodType,goodPic,goodPrice,goodStock,createTime)
+        values
+        (#{userId},#{goodName},#{goodDescription},#{goodType},#{goodPic},#{goodPrice},#{goodStock},now())
+    </insert>
+
+    <update id="updateGood" parameterType="edu.cuit.robin.campushelper.model.Good">
+        update good
+        <set>
+            <if test="goodName != null and goodName != ''">
+                goodName=#{goodName},
+            </if>
+            <if test="goodDescription != null and goodDescription != ''">
+                goodDescription=#{goodDescription},
+            </if>
+            <if test="detail != null and detail != ''">
+                goodType=#{goodType},
+            </if>
+            <if test="contact != null and contact != ''">
+                goodPrice=#{goodPrice},
+            </if>
+            <if test="findOrLost != null and findOrLost != ''">
+                goodStock=#{goodStock},
+            </if>
+            <if test="enable != null and enable != ''">
+                enable=#{enable}
+            </if>
+        </set>
+    </update>
+
+    <update id="deleteGood">
+        update good
+        set deleted = 1
+        where gid=#{gId}
+    </update>
+
+    <update id="upGoodStock">
+        update good
+        set goodStock = goodStock-1
+        where gid=#{gId}
+    </update>
+
+</mapper>

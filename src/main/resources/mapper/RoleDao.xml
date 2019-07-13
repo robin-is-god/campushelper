@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.apache.org//DTD Mapper 3.0//EN"
+        "http://mybatis.apache.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="edu.cuit.robin.campushelper.dao.RoleDao">
+    <select id="queryAllRole" resultType="edu.cuit.robin.campushelper.model.Role">
+        SELECT * FROM ROLE
+    </select>
+
+    <select id="queryRoleByName" resultType="edu.cuit.robin.campushelper.model.Role" parameterType="String">
+        SELECT * FROM ROLE
+        WHERE 1 = 1
+        <if test="rName != null and rName != ''">
+            and rName=#{rName}
+        </if>
+    </select>
+
+    <insert id="insertRole" useGeneratedKeys="true" keyProperty="rId" keyColumn="rId" parameterType="edu.cuit.robin.campushelper.model.Role">
+        insert into role(rName,description)
+        values
+        (#{rName},#{description})
+    </insert>
+
+    <update id="updateRole" parameterType="edu.cuit.robin.campushelper.model.Role">
+        update user
+        <set>
+            <if test="rName != null and rName != ''">
+                rName=#{rName},
+            </if>
+            <if test="description != null and description != ''">
+                description=#{description}
+            </if>
+        </set>
+    </update>
+
+    <delete id="deleteRole">
+        delete from role
+        where rid in
+        <foreach item="idArr"  collection="list" open="(" separator="," close=")">
+            #{idArr}
+        </foreach>
+    </delete>
+</mapper>

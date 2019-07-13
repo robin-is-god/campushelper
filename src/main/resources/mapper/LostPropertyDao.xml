@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.apache.org//DTD Mapper 3.0//EN"
+        "http://mybatis.apache.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="edu.cuit.robin.campushelper.dao.LostPropertyDao">
+    <select id="queryFindOrLost" resultType="java.util.HashMap" parameterType="boolean">
+        SELECT l.*, u.loginName, u.picturePath,u.nickName
+        from lost_property l
+        left join user u
+        on l.userId = u.uid
+        where findOrLost=#{findOrLost}
+        order by createTime desc
+    </select>
+
+    <select id="queryIsSolve" resultType="edu.cuit.robin.campushelper.model.LostProperty" parameterType="boolean">
+        SELECT *
+        from lost_property
+        where 1=1
+        <if test="solve != null and solve != ''">
+            and solve=#{solve}
+        </if>
+        order by createTime desc
+    </select>
+
+    <select id="queryUserProperty" resultType="edu.cuit.robin.campushelper.model.LostProperty" parameterType="int">
+        SELECT l.createTime,l.pid,l.propertyName,l.solve,l.propertyPicture,SUBSTRING(detail,1,30)detail
+        from lost_property l
+        where userId=#{userId}
+        order by createTime desc
+    </select>
+
+    <select id="queryInfoByDate" resultType="edu.cuit.robin.campushelper.model.LostProperty" parameterType="Date">
+        SELECT *
+        from lost_property
+        where 1=1
+        <if test="date != null and date != ''">
+            and createTime=#{date}
+        </if>
+        order by createTime desc
+    </select>
+
+    <select id="queryInfoByName" resultType="edu.cuit.robin.campushelper.model.LostProperty" parameterType="String">
+        SELECT *
+        from lost_property
+        where 1=1
+        <if test="propertyName != null and propertyName != ''">
+            and propertyName like '%' ||#{propertyName,jdbcType=VARCHAR} ||'%'
+        </if>
+        order by createTime desc
+    </select>
+
+    <select id="queryInfoByPid" resultType="java.util.HashMap" parameterType="int">
+        SELECT l.*, u.loginName, u.picturePath,u.nickName
+        from lost_property l
+        left join user u
+        on l.userId = u.uid
+        where pid=#{pId}
+    </select>
+
+    <insert id="insertLostProperty" useGeneratedKeys="true" keyProperty="pId" keyColumn="pId" parameterType="edu.cuit.robin.campushelper.model.LostProperty">
+        insert into lost_property(userId,propertyName,propertyPicture,detail,contact,createTime,findOrLost)
+        values
+        (#{userId},#{propertyName},#{propertyPicture},#{detail},#{contact},now(),#{findOrLost})
+    </insert>
+
+    <update id="updateLostProperty">
+        update lost_property
+        set solve=#{solve}
+        where pid=#{pId}
+    </update>
+
+    <delete id="deleteLostProperty">
+        delete from lost_property
+        where pid=#{pId}
+    </delete>
+
+</mapper>
